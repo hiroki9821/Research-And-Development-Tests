@@ -78,28 +78,15 @@
       <button id="logoutBtn" style="display:none;">ログアウト</button>
       <p id="userInfo"></p>
     </div>
-
     <div id="quiz-area" style="display:none;">
       <p class="question" id="question-text"></p>
       <div id="choices"></div>
     </div>
-
     <div id="result-area">
       <p id="result-message"></p>
       <button onclick="location.reload()">もう一度受ける</button>
       <button id="sendEmailBtn" onclick="sendResultByEmail()">結果をメールで送信</button>
     </div>
-
-    <script>
-      let userEmail = "";
-
-      function sendResultByEmail() {
-        const result = document.getElementById('result-message').textContent;
-        const subject = encodeURIComponent('定期テスト結果');
-        const body = encodeURIComponent('あなたのテスト結果:\n\n' + result);
-        window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
-      }
-    </script>
   </div>
 </body>
 </html>
