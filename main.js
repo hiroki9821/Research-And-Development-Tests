@@ -1,16 +1,16 @@
+// main.js（ESM形式）
+import { getAuth, signInWithPopup, GithubAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import { questions } from './test-data.js';  // 必要に応じて
+
+const auth = getAuth();
+const provider = new GithubAuthProvider();
+
 let userEmail = "";
-
-// Firebase Authのインスタンス取得
-const auth = firebase.auth();
-const provider = new firebase.auth.GithubAuthProvider();
-
-// クイズ用グローバル変数
 let currentQuestion = 0;
 let score = 0;
 
-// ログインボタン
 document.getElementById('loginBtn').onclick = () => {
-  auth.signInWithPopup(provider)
+  signInWithPopup(auth, provider)
     .then(result => {
       const user = result.user;
       userEmail = user.email || "";
@@ -18,16 +18,15 @@ document.getElementById('loginBtn').onclick = () => {
       document.getElementById('loginBtn').style.display = "none";
       document.getElementById('logoutBtn').style.display = "inline-block";
       document.getElementById('quiz-area').style.display = "block";
-      startQuiz(); // ログイン時にクイズ開始
+      startQuiz();
     })
     .catch(error => {
       alert("ログインに失敗しました：" + error.message);
     });
 };
 
-// ログアウトボタン
 document.getElementById('logoutBtn').onclick = () => {
-  auth.signOut().then(() => {
+  signOut(auth).then(() => {
     userEmail = "";
     document.getElementById('userInfo').textContent = "";
     document.getElementById('loginBtn').style.display = "inline-block";
@@ -39,7 +38,6 @@ document.getElementById('logoutBtn').onclick = () => {
   });
 };
 
-// クイズ開始
 function startQuiz() {
   currentQuestion = 0;
   score = 0;
@@ -47,7 +45,6 @@ function startQuiz() {
   showQuestion();
 }
 
-// 問題表示
 function showQuestion() {
   if (currentQuestion >= questions.length) {
     showResult();
@@ -57,7 +54,7 @@ function showQuestion() {
   document.getElementById('question-text').textContent = `Q${currentQuestion + 1}: ${q.question}`;
   const choicesDiv = document.getElementById('choices');
   choicesDiv.innerHTML = "";
-  q.choices.forEach((choice, idx) => {
+  q.choices.forEach(choice => {
     const btn = document.createElement('button');
     btn.className = "choice";
     btn.textContent = choice;
@@ -70,7 +67,6 @@ function showQuestion() {
   });
 }
 
-// 結果表示
 function showResult() {
   document.getElementById('quiz-area').style.display = "none";
   document.getElementById('result-area').style.display = "block";
@@ -78,10 +74,9 @@ function showResult() {
     `あなたの正解数は ${score} / ${questions.length} 問です！`;
 }
 
-// メール送信ボタン（index.htmlのscript部と重複しないよう注意）
-window.sendResultByEmail = function() {
+export function sendResultByEmail() {
   const result = document.getElementById('result-message').textContent;
   const subject = encodeURIComponent('定期テスト結果');
   const body = encodeURIComponent('あなたのテスト結果:\n\n' + result);
   window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
-};
+}
