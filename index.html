@@ -4,11 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>定期テスト - 理解度チェック</title>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-  <script src="firebase-config.js"></script>
-  <script src="test-data.js"></script>
-  <script src="main.js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -90,14 +85,9 @@
   </div>
 </body>
   <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GithubAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
   const firebaseConfig = {
     apiKey: "AIzaSyDQhJ2zMDzyJUbfyLfoZYeIYfGPbuHcayk",
     authDomain: "research-and-development-tests.firebaseapp.com",
@@ -111,5 +101,34 @@
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const provider = new GithubAuthProvider();
+
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const userInfo = document.getElementById("userInfo");
+
+    loginBtn.addEventListener("click", () => {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          userInfo.textContent = `${user.displayName} でログイン中`;
+          loginBtn.style.display = "none";
+          logoutBtn.style.display = "inline-block";
+          document.getElementById("quiz-area").style.display = "block";
+        })
+        .catch((error) => {
+          console.error("ログインエラー:", error);
+        });
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      signOut(auth).then(() => {
+        userInfo.textContent = "";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        document.getElementById("quiz-area").style.display = "none";
+      });
+    });
 </script>
 </html>
